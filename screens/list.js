@@ -1,5 +1,6 @@
-import React from "react";
-import { FlatList, Image, Text, Pressable, Box } from "native-base";
+import React, { useState } from "react";
+import { FlatList, Image, Text, Pressable, Box, Modal, Button, VStack, Center } from "native-base";
+
 const data = [
   {
     id: 1,
@@ -70,13 +71,23 @@ const data = [
 ];
 
 const List = () => {
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const openModal = (item) => {
+    setSelectedItem(item);
+  };
+
+  const closeModal = () => {
+    setSelectedItem(null);
+  };
+
   const renderItem = ({ item }) => {
     return (
       <Pressable
         padding={15}
         borderBottomColor="#dddddd"
         borderBottomWidth={1}
-        onPress={() => alert("Pressed")}
+        onPress={() => openModal(item)}
       >
         <Box>
           <Image source={{ uri: item.image }} height={200} width={null} />
@@ -87,13 +98,33 @@ const List = () => {
       </Pressable>
     );
   };
+
   return (
-    <Box paddingBottom="100">
+    <Box paddingBottom={100}>
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
+
+      {/* Modal */}
+      <Modal isOpen={selectedItem !== null} onClose={closeModal} size="lg">
+        <Modal.Content>
+          <Modal.Header>{selectedItem ? selectedItem.title : ""}</Modal.Header>
+          <Modal.CloseButton />
+          <Modal.Body>
+            {selectedItem && (
+              <VStack space={3}>
+                <Image source={{ uri: selectedItem.image }} height={200} width={null} />
+                <Text>{selectedItem.title}</Text>
+              </VStack>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onPress={closeModal}>Close</Button>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
     </Box>
   );
 };
